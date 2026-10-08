@@ -105,6 +105,26 @@ describe("notes", () => {
 	});
 });
 
+describe("note count", () => {
+	test("counts stored notes", async () => {
+		store.add("one");
+		store.add("two");
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 2 });
+	});
+
+	test("refuses a request without a token", async () => {
+		expect((await call("GET", "/notes/count", { auth: null })).status).toBe(
+			401,
+		);
+	});
+
+	test.each(["POST", "PUT", "DELETE"])("answers 405 for %s", async (method) => {
+		expect((await call(method, "/notes/count")).status).toBe(405);
+	});
+});
+
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
 });
