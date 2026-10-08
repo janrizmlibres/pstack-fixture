@@ -112,3 +112,42 @@ test("answers 404 for an unknown route", async () => {
 test("answers 405 for a known path with the wrong method", async () => {
 	expect((await call("PUT", "/notes")).status).toBe(405);
 });
+
+describe("note count", () => {
+	test("counts an empty store", async () => {
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 0 });
+	});
+
+	test("counts notes left after a removal", async () => {
+		store.add("a");
+		const b = store.add("b");
+		store.remove(b.id);
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 1 });
+	});
+
+	test("refuses a missing or wrong token", async () => {
+		expect((await call("GET", "/notes/count", { auth: null })).status).toBe(
+			401,
+		);
+		expect(
+			(await call("GET", "/notes/count", { auth: "Bearer nope" })).status,
+		).toBe(401);
+	});
+
+	test("refuses POST", async () => {
+		const response = await call("POST", "/notes/count");
+		expect(response.status).toBe(405);
+		expect(await response.json()).toEqual({ error: "method not allowed" });
+	});
+
+	test("refuses DELETE and keeps the notes", async () => {
+		store.add("kept");
+		const response = await call("DELETE", "/notes/count");
+		expect(response.status).toBe(405);
+		expect(store.list()).toEqual([{ id: 1, text: "kept" }]);
+	});
+});
