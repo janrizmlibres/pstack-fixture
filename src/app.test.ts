@@ -54,7 +54,7 @@ describe("notes", () => {
 		store.add("hello");
 		const response = await call("GET", "/notes");
 		expect(response.status).toBe(200);
-		expect(await response.json()).toEqual([{ id: 1, text: "hello" }]);
+		expect(await response.json()).toEqual([{ id: 1, text: "hello", tags: [] }]);
 	});
 
 	test("creates a note", async () => {
@@ -62,8 +62,68 @@ describe("notes", () => {
 			body: { text: "buy milk" },
 		});
 		expect(response.status).toBe(201);
-		expect(await response.json()).toEqual({ id: 1, text: "buy milk" });
-		expect(store.list()).toEqual([{ id: 1, text: "buy milk" }]);
+		expect(await response.json()).toEqual({
+			id: 1,
+			text: "buy milk",
+			tags: [],
+		});
+		expect(store.list()).toEqual([{ id: 1, text: "buy milk", tags: [] }]);
+	});
+
+	test("creates a note with tags", async () => {
+		const response = await call("POST", "/notes", {
+			body: { text: "plan", tags: ["work", "q3"] },
+		});
+		expect(response.status).toBe(201);
+		expect(await response.json()).toEqual({
+			id: 1,
+			text: "plan",
+			tags: ["work", "q3"],
+		});
+		expect<unknown>(store.list()).toEqual([
+			{ id: 1, text: "plan", tags: ["work", "q3"] },
+		]);
+	});
+
+	test("stores mixed-case duplicates as one lower-case tag", async () => {
+		const response = await call("POST", "/notes", {
+			body: { text: "plan", tags: ["Work", "work", "q3", "WORK"] },
+		});
+		expect(response.status).toBe(201);
+		expect(await response.json()).toEqual({
+			id: 1,
+			text: "plan",
+			tags: ["work", "q3"],
+		});
+	});
+
+	test.each([
+		"work",
+		null,
+		[1],
+		[""],
+		["no spaces"],
+		["café"],
+		["a".repeat(33)],
+	])("refuses tags %p", async (tags) => {
+		const response = await call("POST", "/notes", {
+			body: { text: "bad", tags },
+		});
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			error: "tags must be a list of 1-32 character words",
+		});
+		expect(store.list()).toEqual([]);
+	});
+
+	test("checks text before tags", async () => {
+		const response = await call("POST", "/notes", {
+			body: { text: "", tags: ["no spaces"] },
+		});
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			error: "text must be a non-empty string",
+		});
 	});
 
 	test.each([{}, { text: "" }, { text: "   " }, { text: 7 }])(

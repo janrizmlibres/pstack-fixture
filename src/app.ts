@@ -1,4 +1,5 @@
 import type { NoteStore } from "./notes";
+import { parseTags } from "./tags";
 
 type AppOptions = {
 	token: string;
@@ -20,11 +21,16 @@ export function createApp({ token, store }: AppOptions) {
 		if (pathname === "/notes") {
 			if (request.method === "GET") return Response.json(store.list());
 			if (request.method === "POST") {
-				const text = await readText(request);
+				const body = await readBody(request);
+				const text = readText(body);
 				if (text === undefined) {
 					return error(400, "text must be a non-empty string");
 				}
-				return Response.json(store.add(text), { status: 201 });
+				const tags = parseTags("tags" in body ? body.tags : undefined);
+				if (tags === undefined) {
+					return error(400, "tags must be a list of 1-32 character words");
+				}
+				return Response.json(store.add(text, tags), { status: 201 });
 			}
 			return error(405, "method not allowed");
 		}
@@ -41,10 +47,13 @@ export function createApp({ token, store }: AppOptions) {
 	};
 }
 
-async function readText(request: Request): Promise<string | undefined> {
+async function readBody(request: Request): Promise<object> {
 	const body: unknown = await request.json().catch(() => undefined);
-	if (typeof body !== "object" || body === null || !("text" in body))
-		return undefined;
+	return typeof body === "object" && body !== null ? body : {};
+}
+
+function readText(body: object): string | undefined {
+	if (!("text" in body)) return undefined;
 	const { text } = body;
 	return typeof text === "string" && text.trim() !== "" ? text : undefined;
 }
