@@ -4,7 +4,7 @@ A small notes API on Bun and TypeScript. The app is in `src/`; the QA tooling fo
 
 ## Commands
 
-- `bun install`, then `cp .env.example .env`: the app and its test suite need `.env`.
+- `bun install`. The app and its test suite read `NOTES_API_TOKEN` and `PORT` from the environment or from a git-ignored `.env`, which a person sets up by hand (`README.md` says how). Never create, copy or fill in `.env` yourself: when you need it and it isn't there, report it missing and stop.
 - `bun test`: the whole suite. `bun test src/notes.test.ts` runs one file.
 - `bun run lint` (Biome) and `bun run typecheck` (tsc).
 - `bun run dev`: the dev server, on `PORT` from `.env`.
