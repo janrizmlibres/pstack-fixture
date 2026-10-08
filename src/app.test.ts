@@ -172,9 +172,11 @@ describe("search", () => {
 
 	test("refuses to search without a token", async () => {
 		store.add("hello");
-		expect(
-			(await call("GET", "/notes/search?q=hello", { auth: null })).status,
-		).toBe(401);
+		const response = await call("GET", "/notes/search?q=hello", {
+			auth: null,
+		});
+		expect(response.status).toBe(401);
+		expect(await response.json()).toEqual({ error: "unauthorized" });
 	});
 
 	test("answers 405 for a method other than GET", async () => {
