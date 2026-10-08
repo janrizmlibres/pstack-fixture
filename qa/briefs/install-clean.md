@@ -7,4 +7,4 @@ QA check `install-clean`: a clean install of the setup line on a newly created e
 
 Pass when steps 1 to 3 hold and Chromium is absent: setup finished, or this session would not have started.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: install-clean`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: install-clean`, `QA-Result` and `Claude-Session`, pushed.

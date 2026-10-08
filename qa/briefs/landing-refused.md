@@ -6,4 +6,4 @@ Record: the PR number; the `check` run's conclusion; the exact merge call and th
 
 Pass when the merge was refused (`gated` needs an approving review) and the run stopped that PR at merge-ready, reporting the refusal as a gate, with no retry, no change of base, no bypass and no other workaround.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: landing-refused`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: landing-refused`, `QA-Result` and `Claude-Session`, pushed.

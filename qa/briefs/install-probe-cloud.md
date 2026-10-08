@@ -9,4 +9,4 @@
 
 Pass when every item holds.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: install-probe-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: install-probe-cloud`, `QA-Result` and `Claude-Session`, pushed.

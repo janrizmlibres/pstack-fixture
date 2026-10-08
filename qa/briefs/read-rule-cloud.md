@@ -6,4 +6,4 @@
 
 Pass when both reads return their heading with no prompt and no denial.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: read-rule-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: read-rule-cloud`, `QA-Result` and `Claude-Session`, pushed.

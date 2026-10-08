@@ -7,12 +7,7 @@ import {
 	writeFileSync,
 } from "node:fs";
 import { join } from "node:path";
-import {
-	cloneWithBranches,
-	git,
-	remoteBranches,
-	scriptsDir,
-} from "./git-fixture";
+import { branchesOf, cloneWithBranches, git, scriptsDir } from "./git-fixture";
 
 const repo = "janrizmlibres/pstack-fixture";
 
@@ -25,16 +20,21 @@ case "$1 $2" in
   "repo view") [[ -f "$state/repo" ]] ;;
   "repo create") echo "$*" > "$state/repo" ;;
   "issue list") cat "$state/issues" 2>/dev/null || true ;;
-  "issue comment") echo "comment $3" >> "$state/comments"; cat >> "$state/comments" ;;
+  "issue view") touch "$state/comments"; grep -c "^comment $3$" "$state/comments" || true ;;
+  "issue comment")
+    if [[ -f "$state/fail-comment" ]]; then rm "$state/fail-comment"; exit 1; fi
+    echo "comment $3" >> "$state/comments"; cat >> "$state/comments" ;;
   "issue create")
+    touch "$state/issues"
+    number=$(( $(wc -l < "$state/issues") + 1 ))
     while [[ $# -gt 0 ]]; do
       case "$1" in
-        --title) echo "$2" >> "$state/issues"; shift ;;
+        --title) printf '%s\t%s\n' "$number" "$2" >> "$state/issues"; shift ;;
         --body-file) cat > "$state/issue-body" ;;
       esac
       shift
     done
-    echo "https://github.com/janrizmlibres/pstack-fixture/issues/1" ;;
+    echo "https://github.com/janrizmlibres/pstack-fixture/issues/$number" ;;
   *)
     if [[ "$1" != api ]]; then echo "stub gh: unexpected $*" >&2; exit 9; fi
     method=GET input=""
@@ -117,11 +117,7 @@ describe("publish", () => {
 		expect(read(join(env.state, "repo"))).toContain(
 			`repo create ${repo} --public`,
 		);
-		expect(remoteBranches(env.origin).sort()).toEqual([
-			"develop",
-			"gated",
-			"main",
-		]);
+		expect(branchesOf(env.origin).sort()).toEqual(["develop", "gated", "main"]);
 		expect(read(join(env.state, "ruleset-writes"))).toBe(
 			[
 				`POST repos/${repo}/rulesets gated`,
@@ -129,12 +125,12 @@ describe("publish", () => {
 				"",
 			].join("\n"),
 		);
-		expect(read(join(env.state, "issues"))).toBe("Spec: Tag notes\n");
+		expect(read(join(env.state, "issues"))).toBe("1\tSpec: Tag notes\n");
 		expect(read(join(env.state, "issue-body"))).toBe(
 			"## Problem Statement\n\nNotes have no tags.\n",
 		);
 		expect(read(join(env.state, "comments"))).toBe(
-			`comment https://github.com/${repo}/issues/1\nTags are case-insensitive.\n`,
+			"comment 1\nTags are case-insensitive.\n",
 		);
 	});
 
@@ -154,9 +150,22 @@ describe("publish", () => {
 				"",
 			].join("\n"),
 		);
-		expect(read(join(env.state, "issues"))).toBe("Spec: Tag notes\n");
+		expect(read(join(env.state, "issues"))).toBe("1\tSpec: Tag notes\n");
 		expect(read(join(env.state, "comments")).match(/^comment /gm)).toHaveLength(
 			1,
+		);
+	});
+
+	test("posts the spec comment on a re-run when the first run filed the issue but not the comment", () => {
+		const env = setup();
+		writeFileSync(join(env.state, "fail-comment"), "");
+		expect(publish(env).exitCode).not.toBe(0);
+
+		expect(publish(env).exitCode).toBe(0);
+
+		expect(read(join(env.state, "issues"))).toBe("1\tSpec: Tag notes\n");
+		expect(read(join(env.state, "comments"))).toBe(
+			"comment 1\nTags are case-insensitive.\n",
 		);
 	});
 

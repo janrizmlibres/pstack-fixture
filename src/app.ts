@@ -11,10 +11,10 @@ export function createApp({ token, store }: AppOptions) {
 
 		if (pathname === "/health") return new Response("ok");
 		if (pathname !== "/notes" && !pathname.startsWith("/notes/"))
-			return notFound();
+			return error(404, "not found");
 
 		if (request.headers.get("authorization") !== `Bearer ${token}`) {
-			return Response.json({ error: "unauthorized" }, { status: 401 });
+			return error(401, "unauthorized");
 		}
 
 		if (pathname === "/notes") {
@@ -22,14 +22,11 @@ export function createApp({ token, store }: AppOptions) {
 			if (request.method === "POST") {
 				const text = await readText(request);
 				if (text === undefined) {
-					return Response.json(
-						{ error: "text must be a non-empty string" },
-						{ status: 400 },
-					);
+					return error(400, "text must be a non-empty string");
 				}
 				return Response.json(store.add(text), { status: 201 });
 			}
-			return Response.json({ error: "method not allowed" }, { status: 405 });
+			return error(405, "method not allowed");
 		}
 
 		const id = pathname.match(/^\/notes\/(\d+)$/)?.[1];
@@ -40,7 +37,7 @@ export function createApp({ token, store }: AppOptions) {
 		) {
 			return new Response(null, { status: 204 });
 		}
-		return notFound();
+		return error(404, "not found");
 	};
 }
 
@@ -52,6 +49,6 @@ async function readText(request: Request): Promise<string | undefined> {
 	return typeof text === "string" && text.trim() !== "" ? text : undefined;
 }
 
-function notFound() {
-	return Response.json({ error: "not found" }, { status: 404 });
+function error(status: number, message: string) {
+	return Response.json({ error: message }, { status });
 }

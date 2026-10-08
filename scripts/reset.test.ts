@@ -1,11 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import {
-	cloneWithBranches,
-	git,
-	localBranches,
-	remoteBranches,
-	run,
-} from "./git-fixture";
+import { branchesOf, cloneWithBranches, git, run } from "./git-fixture";
 
 const kept = ["develop", "gated", "feature/qa/notes", "claudette"];
 const deleted = ["qa/landing", "qa/swarm/run-1", "claude/landing-heron-k4xs96"];
@@ -17,7 +11,7 @@ describe("reset", () => {
 		const result = run(clone, "reset.sh");
 
 		expect(result.exitCode).toBe(0);
-		expect(remoteBranches(origin).sort()).toEqual(["main", ...kept].sort());
+		expect(branchesOf(origin).sort()).toEqual(["main", ...kept].sort());
 		for (const branch of deleted) expect(result.stdout).toContain(branch);
 	});
 
@@ -27,7 +21,7 @@ describe("reset", () => {
 
 		expect(run(clone, "reset.sh").exitCode).toBe(0);
 
-		expect(localBranches(clone).sort()).toEqual(["main", ...kept].sort());
+		expect(branchesOf(clone).sort()).toEqual(["main", ...kept].sort());
 	});
 
 	test("lists what it would delete and deletes nothing with --dry-run", () => {
@@ -37,10 +31,10 @@ describe("reset", () => {
 
 		expect(result.exitCode).toBe(0);
 		for (const branch of deleted) expect(result.stdout).toContain(branch);
-		expect(remoteBranches(origin).sort()).toEqual(
+		expect(branchesOf(origin).sort()).toEqual(
 			["main", ...kept, ...deleted].sort(),
 		);
-		expect(localBranches(clone)).toContain("qa/landing");
+		expect(branchesOf(clone)).toContain("qa/landing");
 	});
 
 	test("refuses to run from a branch it would delete, and deletes nothing", () => {
@@ -51,7 +45,7 @@ describe("reset", () => {
 
 		expect(result.exitCode).toBe(1);
 		expect(result.stderr).toContain("switch off qa/landing first");
-		expect(remoteBranches(origin).sort()).toEqual(["main", ...deleted].sort());
+		expect(branchesOf(origin).sort()).toEqual(["main", ...deleted].sort());
 	});
 
 	test("says so when there is nothing to delete", () => {

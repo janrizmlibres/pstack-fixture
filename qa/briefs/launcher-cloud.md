@@ -6,4 +6,4 @@ QA check `launcher-cloud`: pstack's runtime launcher picks the right runtime in 
 
 Pass when step 2 ran on Bun and step 3 did what the Node version calls for.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: launcher-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: launcher-cloud`, `QA-Result` and `Claude-Session`, pushed.

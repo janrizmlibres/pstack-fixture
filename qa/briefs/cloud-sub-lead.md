@@ -6,4 +6,4 @@ Record: the sub-lead's worktree path; each runner's worktree path and branch; wh
 
 Pass when the runners were spawned by the sub-lead (not by you), each in its own worktree distinct from the sub-lead's and from each other, and the sub-lead returned a winner.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: cloud-sub-lead`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: cloud-sub-lead`, `QA-Result` and `Claude-Session`, pushed.

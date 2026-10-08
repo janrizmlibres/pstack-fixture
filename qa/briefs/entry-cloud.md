@@ -6,4 +6,4 @@
 
 Pass when both surface lines read `surface=cloud mode=auto` and the skill path sits under `/opt/claude-pstack/pstack/`.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: entry-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: entry-cloud`, `QA-Result` and `Claude-Session`, pushed.

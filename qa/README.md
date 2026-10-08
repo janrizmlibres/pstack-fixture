@@ -1,6 +1,6 @@
 # QA
 
-pstack's release and watch checks run in this repo, so they never touch a real one. The checklist, with every check's tier and surface, is `docs/qa.md` in `janrizmlibres/claude-pstack`. This directory holds what the checks need here:
+pstack's release and watch checks run in this repo, so they never touch a real one. This directory holds what the checks need here:
 
 - `briefs/`: one brief per cloud release check, named after the check's id. A brief is the whole prompt of an unattended cloud session.
 - `spec-issue.md` and `spec-comment.md`: the spec issue the spec-intake checks build, and the comment filed on it.
@@ -29,8 +29,8 @@ A few checks need something set up first, or a different start:
 |---|---|
 | `install-clean` | Create a new environment with the candidate's setup line and the environment variable `PLAYWRIGHT_DOWNLOAD_HOST=https://download.invalid`, so the Chromium download fails. Start the brief with `--settings '{"remote":{"defaultEnvironmentId":"<new env id>"}}'`. |
 | `pulled-update` | After `pstack-qa`'s setup cache is built, push a marker commit to the candidate branch that adds the line `qa-marker <nonce>` to `pstack/skills/poteto-mode/SKILL.md`, to the reminder hook's output and to the `work` agent's description. Revert the commit after the check. |
-| `read-rule-cloud` | Start it without `--permission-mode auto`: it checks default mode. Approve the report push yourself when it asks; nothing else should prompt. |
-| `spec-build-cloud` | `scripts/publish.sh` has filed the spec issue as #1. |
+| `read-rule-cloud` | The one cloud check not started in Auto: start it without `--permission-mode auto`, since it checks default mode. Watch it and approve the report commit and push when they prompt; the plugin reads must not. |
+| `spec-build-cloud` | `scripts/publish.sh` has filed the spec issue; it is the repo's first issue, the one the brief's URL names. |
 | `routine-run-now` | Create a routine on this repo and `pstack-qa` whose prompt is the brief, check its model with `/schedule`, then press Run now. |
 | `routine-label` | Create a routine on this repo and `pstack-qa` whose prompt is the brief, fired by a GitHub trigger on pull requests labelled `qa-routine`. Push a branch `qa/routine-label` off `develop` with one empty commit, open a ready (not draft) PR into `develop` whose body asks for a `GET /notes/count` endpoint returning `{ "count": <number of notes> }`, then add the label. |
 

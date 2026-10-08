@@ -6,4 +6,4 @@
 
 Pass when the hook's message appeared after the compaction and listed poteto-mode's `SKILL.md` first.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: compaction-hook-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: compaction-hook-cloud`, `QA-Result` and `Claude-Session`, pushed.

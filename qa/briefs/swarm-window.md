@@ -7,4 +7,4 @@ The task for every slice: list the test names in `src/*.test.ts` (`test(` and `t
 
 Pass when step 1 never had more than 10 slices in flight and returned all 24; and step 2 met at least one refused spawn, dropped no slice, returned all 25, and never returned `BLOCKED: concurrency cap` while a slice was in flight. If no spawn was refused in step 2, report `BLOCKED` with the most agents you had in flight.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: swarm-window`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: swarm-window`, `QA-Result` and `Claude-Session`, pushed.

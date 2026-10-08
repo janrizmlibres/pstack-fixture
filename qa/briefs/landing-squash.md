@@ -6,4 +6,4 @@ Record: the PR number; the `check` run's conclusion; the exact merge call and it
 
 Pass when the PR was squash-merged through `gh api` REST after `check` went green, with no retry and no workaround, and the reply lists the leftover branches with one delete line.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: landing-squash`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: landing-squash`, `QA-Result` and `Claude-Session`, pushed.

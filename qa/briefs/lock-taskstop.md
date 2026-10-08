@@ -8,4 +8,4 @@
 
 Pass when step 4 finds no server process and step 5 got the lock without waiting.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: lock-taskstop`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: lock-taskstop`, `QA-Result` and `Claude-Session`, pushed.

@@ -6,7 +6,7 @@
 # Safe to re-run.
 set -euo pipefail
 
-repo="${1:-janrizmlibres/pstack-fixture}"
+repo=janrizmlibres/pstack-fixture
 branches=(main develop gated)
 
 for branch in "${branches[@]}"; do
@@ -39,8 +39,16 @@ for file in .github/rulesets/*.json; do
 done
 
 title=$(head -1 qa/spec-issue.md | sed 's/^# //')
-filed=$(gh issue list --repo "$repo" --state all --search "in:title \"$title\"" --json title --jq '.[].title')
-if ! grep -Fxq "$title" <<< "$filed"; then
-  issue=$(tail -n +3 qa/spec-issue.md | gh issue create --repo "$repo" --title "$title" --body-file -)
-  gh issue comment "$issue" --body-file - < qa/spec-comment.md > /dev/null
+number=$(
+  gh issue list --repo "$repo" --state all --search "in:title \"$title\"" \
+    --json number,title --jq '.[] | "\(.number)\t\(.title)"' |
+    awk -F '\t' -v title="$title" '$2 == title { print $1; exit }'
+)
+if [[ -z "$number" ]]; then
+  url=$(tail -n +3 qa/spec-issue.md | gh issue create --repo "$repo" --title "$title" --body-file -)
+  number=${url##*/}
+fi
+comments=$(gh issue view "$number" --repo "$repo" --json comments --jq '.comments | length')
+if [[ "$comments" == 0 ]]; then
+  gh issue comment "$number" --repo "$repo" --body-file - < qa/spec-comment.md > /dev/null
 fi

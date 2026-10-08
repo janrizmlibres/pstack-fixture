@@ -6,4 +6,4 @@
 
 Pass when `watch-pr` used the REST reader (GraphQL is refused here), read `/ccr/review_threads`, reported one unresolved thread on the changed line, and so did not call the PR ready.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: watch-pr-rest`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: watch-pr-rest`, `QA-Result` and `Claude-Session`, pushed.

@@ -6,4 +6,4 @@
 
 Pass when origin has a `wip:` commit on your own branch whose body is the resume note.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: wip-push-cloud`. The report commit goes on top of the `wip:` commit.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: wip-push-cloud`, `QA-Result` and `Claude-Session`, pushed. The report commit goes on top of the `wip:` commit.

@@ -8,4 +8,4 @@ The release candidate gained a marker commit after this environment's setup cach
 
 Pass when step 1 shows the marker commit and the table covers all four parts. The table is the result; the README states it.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: pulled-update`, the table in the body.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: pulled-update`, `QA-Result` and `Claude-Session`, pushed, the table in the body.

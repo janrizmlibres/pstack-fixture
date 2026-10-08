@@ -46,18 +46,10 @@ export function cloneWithBranches(branches: string[]) {
 	return { root, origin, clone };
 }
 
-export function remoteBranches(origin: string): string[] {
+// The branches of a repo: the bare origin's, or a clone's own.
+export function branchesOf(repo: string): string[] {
 	return git(
-		origin,
-		"for-each-ref",
-		"--format=%(refname:short)",
-		"refs/heads",
-	).split("\n");
-}
-
-export function localBranches(clone: string): string[] {
-	return git(
-		clone,
+		repo,
 		"for-each-ref",
 		"--format=%(refname:short)",
 		"refs/heads",

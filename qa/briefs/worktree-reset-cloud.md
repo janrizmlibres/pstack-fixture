@@ -7,4 +7,4 @@
 
 Pass when the worker's branch starts at the SHA from step 1 (the marker line is there, though it was never pushed), its worktree is under `.claude/worktrees/`, and `.git/info/exclude` lists `.claude/worktrees/` exactly once.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: worktree-reset-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: worktree-reset-cloud`, `QA-Result` and `Claude-Session`, pushed.

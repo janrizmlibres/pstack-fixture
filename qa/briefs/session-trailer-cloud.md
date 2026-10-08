@@ -6,4 +6,4 @@ Record the trailers of the worker's report commit (`git log -1 --format=%B <its 
 
 Pass when the report commit carries `Pstack-Status:` and `Claude-Session:` trailers and no `Co-Authored-By:` line.
 
-Report as `qa/README.md` says under "Reporting", with `QA-Check: session-trailer-cloud`.
+Report as `qa/README.md` says under "Reporting": a commit on your own branch with the trailers `QA-Check: session-trailer-cloud`, `QA-Result` and `Claude-Session`, pushed.
