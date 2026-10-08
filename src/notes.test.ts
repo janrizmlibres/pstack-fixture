@@ -37,6 +37,28 @@ describe("note store", () => {
 		expect(store.add("two").id).toBe(2);
 	});
 
+	test("gets a stored note by id", () => {
+		const store = createNoteStore();
+		store.add("first");
+		store.add("second");
+		expect(store.get(2)).toEqual({ id: 2, text: "second" });
+	});
+
+	test("gets nothing for an id that is not stored", () => {
+		const store = createNoteStore();
+		store.add("only");
+		expect(store.get(99)).toBeUndefined();
+		expect(store.get(1)).toEqual({ id: 1, text: "only" });
+	});
+
+	test("gets a copy, so callers cannot edit the stored note", () => {
+		const store = createNoteStore();
+		store.add("original");
+		const got = store.get(1);
+		if (got) got.text = "edited";
+		expect(store.get(1)).toEqual({ id: 1, text: "original" });
+	});
+
 	test("hands out copies, so callers cannot edit stored notes", () => {
 		const store = createNoteStore();
 		store.add("original");
