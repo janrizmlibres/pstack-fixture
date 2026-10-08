@@ -88,6 +88,33 @@ describe("notes", () => {
 		expect(response.status).toBe(400);
 	});
 
+	test("gets one note", async () => {
+		store.add("hello");
+		const response = await call("GET", "/notes/1");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ id: 1, text: "hello" });
+	});
+
+	test("answers 404 when getting a note that does not exist", async () => {
+		const response = await call("GET", "/notes/99");
+		expect(response.status).toBe(404);
+		expect(await response.json()).toEqual({ error: "not found" });
+	});
+
+	test("answers 404 when getting an id that is not a number", async () => {
+		expect((await call("GET", "/notes/abc")).status).toBe(404);
+	});
+
+	test("refuses to get a note without a token", async () => {
+		store.add("hello");
+		expect((await call("GET", "/notes/1", { auth: null })).status).toBe(401);
+	});
+
+	test("answers 404, not 405, for an unsupported method on a note", async () => {
+		store.add("hello");
+		expect((await call("PUT", "/notes/1")).status).toBe(404);
+	});
+
 	test("deletes a note with an empty 204", async () => {
 		const note = store.add("bye");
 		const response = await call("DELETE", `/notes/${note.id}`);
