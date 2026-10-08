@@ -66,4 +66,26 @@ describe("note store", () => {
 		if (listed) listed.text = "edited";
 		expect(store.list()[0]?.text).toBe("original");
 	});
+
+	test("searches note text for a case-insensitive substring, in order", () => {
+		const store = createNoteStore();
+		store.add("Buy MILK");
+		store.add("walk the dog");
+		store.add("oat milk latte");
+		expect(store.search("milk")).toEqual([
+			{ id: 1, text: "Buy MILK" },
+			{ id: 3, text: "oat milk latte" },
+		]);
+		expect(store.search("Dog")).toEqual([{ id: 2, text: "walk the dog" }]);
+		expect(store.search("cat")).toEqual([]);
+	});
+
+	test("hands out copies from search, so callers cannot edit stored notes", () => {
+		const store = createNoteStore();
+		store.add("original");
+		const [found] = store.search("orig");
+		expect(found).toEqual({ id: 1, text: "original" });
+		if (found) found.text = "edited";
+		expect(store.get(1)).toEqual({ id: 1, text: "original" });
+	});
 });

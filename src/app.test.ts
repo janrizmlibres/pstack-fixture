@@ -132,6 +132,58 @@ describe("notes", () => {
 	});
 });
 
+describe("search", () => {
+	test("returns notes whose text contains the query, ignoring case", async () => {
+		store.add("Buy MILK");
+		store.add("walk the dog");
+		store.add("oat milk latte");
+		const response = await call("GET", "/notes/search?q=Milk");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([
+			{ id: 1, text: "Buy MILK" },
+			{ id: 3, text: "oat milk latte" },
+		]);
+	});
+
+	test("returns an empty list when nothing matches", async () => {
+		store.add("walk the dog");
+		const response = await call("GET", "/notes/search?q=cat");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([]);
+	});
+
+	test("decodes the query", async () => {
+		store.add("buy oat milk");
+		store.add("oatmeal");
+		const response = await call("GET", "/notes/search?q=oat%20milk");
+		expect(await response.json()).toEqual([{ id: 1, text: "buy oat milk" }]);
+	});
+
+	test.each(["/notes/search", "/notes/search?q=", "/notes/search?q=%20%20"])(
+		"refuses %p with 400",
+		async (path) => {
+			const response = await call("GET", path);
+			expect(response.status).toBe(400);
+			expect(await response.json()).toEqual({
+				error: "q must be a non-empty string",
+			});
+		},
+	);
+
+	test("refuses to search without a token", async () => {
+		store.add("hello");
+		expect(
+			(await call("GET", "/notes/search?q=hello", { auth: null })).status,
+		).toBe(401);
+	});
+
+	test("answers 405 for a method other than GET", async () => {
+		const response = await call("POST", "/notes/search?q=hello");
+		expect(response.status).toBe(405);
+		expect(await response.json()).toEqual({ error: "method not allowed" });
+	});
+});
+
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
 });
