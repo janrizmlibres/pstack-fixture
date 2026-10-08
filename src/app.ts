@@ -10,6 +10,7 @@ export function createApp({ token, store }: AppOptions) {
 		const { pathname } = new URL(request.url);
 
 		if (pathname === "/health") return new Response("ok");
+		if (pathname === "/ping") return new Response("pong");
 		if (pathname !== "/notes" && !pathname.startsWith("/notes/"))
 			return error(404, "not found");
 
