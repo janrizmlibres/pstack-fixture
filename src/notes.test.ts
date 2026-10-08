@@ -44,4 +44,25 @@ describe("note store", () => {
 		if (listed) listed.text = "edited";
 		expect(store.list()[0]?.text).toBe("original");
 	});
+
+	test("searches note text case-insensitively, in order", () => {
+		const store = createNoteStore();
+		store.add("Buy MILK");
+		store.add("walk the dog");
+		store.add("oat milk latte");
+		expect(store.search("milk")).toEqual([
+			{ id: 1, text: "Buy MILK" },
+			{ id: 3, text: "oat milk latte" },
+		]);
+		expect(store.search("Dog")).toEqual([{ id: 2, text: "walk the dog" }]);
+		expect(store.search("cheese")).toEqual([]);
+	});
+
+	test("hands out search results as copies", () => {
+		const store = createNoteStore();
+		store.add("original");
+		const [found] = store.search("orig");
+		if (found) found.text = "edited";
+		expect(store.list()[0]?.text).toBe("original");
+	});
 });
