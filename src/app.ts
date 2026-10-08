@@ -30,6 +30,10 @@ export function createApp({ token, store }: AppOptions) {
 		}
 
 		const id = pathname.match(/^\/notes\/(\d+)$/)?.[1];
+		if (id !== undefined && request.method === "GET") {
+			const note = store.get(Number(id));
+			if (note) return Response.json(note);
+		}
 		if (
 			id !== undefined &&
 			request.method === "DELETE" &&

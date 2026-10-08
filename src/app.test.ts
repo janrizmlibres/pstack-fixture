@@ -103,6 +103,42 @@ describe("notes", () => {
 	test("answers 404 for an id that is not a number", async () => {
 		expect((await call("DELETE", "/notes/abc")).status).toBe(404);
 	});
+
+	test("gets a note by id", async () => {
+		store.add("hello");
+		const response = await call("GET", "/notes/1");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ id: 1, text: "hello" });
+	});
+
+	test("answers 404 when getting a note that does not exist", async () => {
+		store.add("hello");
+		expect((await call("GET", "/notes/1")).status).toBe(200);
+		const response = await call("GET", "/notes/99");
+		expect(response.status).toBe(404);
+		expect(await response.json()).toEqual({ error: "not found" });
+	});
+
+	test("refuses to get a note without a token", async () => {
+		store.add("hello");
+		const response = await call("GET", "/notes/1", { auth: null });
+		expect(response.status).toBe(401);
+		expect(await response.json()).toEqual({ error: "unauthorized" });
+	});
+
+	test("answers 404 when getting an id that is not a number", async () => {
+		store.add("hello");
+		const response = await call("GET", "/notes/abc");
+		expect(response.status).toBe(404);
+		expect(await response.json()).toEqual({ error: "not found" });
+	});
+
+	test("answers 404 for PUT on an existing note", async () => {
+		store.add("hello");
+		const response = await call("PUT", "/notes/1");
+		expect(response.status).toBe(404);
+		expect(store.list()).toEqual([{ id: 1, text: "hello" }]);
+	});
 });
 
 test("answers 404 for an unknown route", async () => {

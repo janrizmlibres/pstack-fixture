@@ -5,6 +5,7 @@ export type Note = {
 
 export type NoteStore = {
 	list(): Note[];
+	get(id: number): Note | undefined;
 	add(text: string): Note;
 	remove(id: number): boolean;
 };
@@ -15,6 +16,10 @@ export function createNoteStore(): NoteStore {
 
 	return {
 		list: () => [...notes.values()].map((note) => ({ ...note })),
+		get(id) {
+			const note = notes.get(id);
+			return note && { ...note };
+		},
 		add(text) {
 			lastId += 1;
 			const note = { id: lastId, text: text.trim() };
