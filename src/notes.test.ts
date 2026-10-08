@@ -31,6 +31,14 @@ describe("note store", () => {
 		expect(store.list()).toEqual([]);
 	});
 
+	test("adds notes with an empty tag list", () => {
+		expect(createNoteStore().add("untagged")).toEqual({
+			id: 1,
+			text: "untagged",
+			tags: [],
+		});
+	});
+
 	test("never reuses the id of a removed note", () => {
 		const store = createNoteStore();
 		store.remove(store.add("one").id);
