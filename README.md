@@ -16,3 +16,4 @@ bun run dev
 ## QA
 
 How to run a check, the briefs, the report contract and the reset are in `qa/README.md`.
+worktree-reset-cloud marker
