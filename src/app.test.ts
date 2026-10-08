@@ -159,7 +159,14 @@ describe("search", () => {
 		expect(await response.json()).toEqual([{ id: 1, text: "walk the dog" }]);
 	});
 
-	test.each(["", "?q=", "?q=%20%20", "?other=milk"])(
+	test("decodes q from the query string", async () => {
+		store.add("50% off");
+		store.add("walk the dog");
+		const response = await call("GET", "/notes/search?q=50%25");
+		expect(await response.json()).toEqual([{ id: 1, text: "50% off" }]);
+	});
+
+	test.each(["", "?q", "?q=", "?q=%20%20", "?other=milk"])(
 		"refuses a missing or blank q in %p",
 		async (query) => {
 			store.add("milk");
@@ -190,6 +197,12 @@ describe("search", () => {
 	test("does not treat a trailing-slash search path as search", async () => {
 		store.add("milk");
 		expect((await call("GET", "/notes/search/?q=milk")).status).toBe(404);
+	});
+
+	test("leaves a note's own path alone when it carries q", async () => {
+		store.add("milk");
+		const response = await call("GET", "/notes/1?q=nothing");
+		expect(await response.json()).toEqual({ id: 1, text: "milk" });
 	});
 });
 
