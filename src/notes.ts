@@ -8,6 +8,7 @@ export type NoteStore = {
 	get(id: number): Note | undefined;
 	add(text: string): Note;
 	remove(id: number): boolean;
+	search(query: string): Note[];
 };
 
 export function createNoteStore(): NoteStore {
@@ -27,5 +28,11 @@ export function createNoteStore(): NoteStore {
 			return { ...note };
 		},
 		remove: (id) => notes.delete(id),
+		search(query) {
+			const needle = query.toLowerCase();
+			return [...notes.values()]
+				.filter((note) => note.text.toLowerCase().includes(needle))
+				.map((note) => ({ ...note }));
+		},
 	};
 }

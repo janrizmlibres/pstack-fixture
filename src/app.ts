@@ -7,7 +7,7 @@ type AppOptions = {
 
 export function createApp({ token, store }: AppOptions) {
 	return async (request: Request): Promise<Response> => {
-		const { pathname } = new URL(request.url);
+		const { pathname, searchParams } = new URL(request.url);
 
 		if (pathname === "/health") return new Response("ok");
 		if (pathname !== "/notes" && !pathname.startsWith("/notes/"))
@@ -27,6 +27,13 @@ export function createApp({ token, store }: AppOptions) {
 				return Response.json(store.add(text), { status: 201 });
 			}
 			return error(405, "method not allowed");
+		}
+
+		if (pathname === "/notes/search") {
+			if (request.method !== "GET") return error(405, "method not allowed");
+			const query = searchParams.get("q")?.trim();
+			if (!query) return error(400, "q must be a non-empty string");
+			return Response.json(store.search(query));
 		}
 
 		const id = pathname.match(/^\/notes\/(\d+)$/)?.[1];

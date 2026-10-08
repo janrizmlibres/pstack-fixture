@@ -59,6 +59,39 @@ describe("note store", () => {
 		expect(store.get(1)).toEqual({ id: 1, text: "original" });
 	});
 
+	test("searches note text for a substring, ignoring case, in id order", () => {
+		const store = createNoteStore();
+		store.add("Buy MILK");
+		store.add("walk the dog");
+		store.add("oat milk latte");
+		expect(store.search("Milk")).toEqual([
+			{ id: 1, text: "Buy MILK" },
+			{ id: 3, text: "oat milk latte" },
+		]);
+	});
+
+	test("searches nothing when no note text contains the query", () => {
+		const store = createNoteStore();
+		store.add("walk the dog");
+		expect(store.search("cat")).toEqual([]);
+		expect(store.search("DOG")).toEqual([{ id: 1, text: "walk the dog" }]);
+	});
+
+	test("skips removed notes when searching", () => {
+		const store = createNoteStore();
+		store.remove(store.add("milk").id);
+		store.add("more milk");
+		expect(store.search("milk")).toEqual([{ id: 2, text: "more milk" }]);
+	});
+
+	test("searches out copies, so callers cannot edit stored notes", () => {
+		const store = createNoteStore();
+		store.add("original");
+		const [found] = store.search("orig");
+		if (found) found.text = "edited";
+		expect(store.get(1)).toEqual({ id: 1, text: "original" });
+	});
+
 	test("hands out copies, so callers cannot edit stored notes", () => {
 		const store = createNoteStore();
 		store.add("original");

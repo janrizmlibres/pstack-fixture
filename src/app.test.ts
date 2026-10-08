@@ -132,6 +132,67 @@ describe("notes", () => {
 	});
 });
 
+describe("search", () => {
+	test("finds notes whose text contains q, ignoring case", async () => {
+		store.add("Buy MILK");
+		store.add("walk the dog");
+		store.add("oat milk latte");
+		const response = await call("GET", "/notes/search?q=milk");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([
+			{ id: 1, text: "Buy MILK" },
+			{ id: 3, text: "oat milk latte" },
+		]);
+	});
+
+	test("answers an empty list when nothing matches", async () => {
+		store.add("walk the dog");
+		const response = await call("GET", "/notes/search?q=cat");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([]);
+	});
+
+	test("ignores whitespace around q", async () => {
+		store.add("walk the dog");
+		store.add("hot dogs");
+		const response = await call("GET", "/notes/search?q=%20the%20dog%20");
+		expect(await response.json()).toEqual([{ id: 1, text: "walk the dog" }]);
+	});
+
+	test.each(["", "?q=", "?q=%20%20", "?other=milk"])(
+		"refuses a missing or blank q in %p",
+		async (query) => {
+			store.add("milk");
+			const response = await call("GET", `/notes/search${query}`);
+			expect(response.status).toBe(400);
+			expect(await response.json()).toEqual({
+				error: "q must be a non-empty string",
+			});
+		},
+	);
+
+	test("refuses to search without a token", async () => {
+		store.add("milk");
+		const response = await call("GET", "/notes/search?q=milk", { auth: null });
+		expect(response.status).toBe(401);
+	});
+
+	test.each(["POST", "PUT", "DELETE"])(
+		"answers 405 for %s on the search path",
+		async (method) => {
+			store.add("milk");
+			const response = await call(method, "/notes/search?q=milk");
+			expect(response.status).toBe(405);
+			expect(store.list()).toEqual([{ id: 1, text: "milk" }]);
+		},
+	);
+
+	test("does not treat a trailing-slash search path as search", async () => {
+		store.add("milk");
+		expect((await call("GET", "/notes/search/?q=milk")).status).toBe(404);
+	});
+});
+
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
 });
