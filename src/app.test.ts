@@ -37,6 +37,14 @@ describe("health", () => {
 	});
 });
 
+describe("version", () => {
+	test("answers the package version without a token", async () => {
+		const response = await call("GET", "/version", { auth: null });
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ version: "0.1.0" });
+	});
+});
+
 describe("auth", () => {
 	test("refuses a request without a token", async () => {
 		expect((await call("GET", "/notes", { auth: null })).status).toBe(401);

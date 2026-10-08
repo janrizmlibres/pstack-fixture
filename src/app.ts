@@ -1,3 +1,4 @@
+import { version } from "../package.json";
 import type { NoteStore } from "./notes";
 
 type AppOptions = {
@@ -10,6 +11,7 @@ export function createApp({ token, store }: AppOptions) {
 		const { pathname } = new URL(request.url);
 
 		if (pathname === "/health") return new Response("ok");
+		if (pathname === "/version") return Response.json({ version });
 		if (pathname !== "/notes" && !pathname.startsWith("/notes/"))
 			return error(404, "not found");
 
