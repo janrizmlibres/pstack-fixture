@@ -1,0 +1,9 @@
+/pstack:poteto-mode QA check `compaction-hook-cloud`: pstack's compaction hook fires after a mid-turn auto-compaction in cloud. Change no code.
+
+1. In this one turn, read `node_modules/typescript/lib/lib.dom.d.ts` (run `bun install` first if `node_modules` is missing) into your own context, 2,000 lines per `Read`, start to end and again if needed, until the conversation is auto-compacted. Don't delegate the reading: the point is to fill your own context.
+2. After the compaction, quote verbatim the message the compaction hook added: it says you were compacted and lists the durable state to re-read.
+3. Follow it: re-read what it lists, and record what that was.
+
+Pass when the hook's message appeared after the compaction and listed poteto-mode's `SKILL.md` first.
+
+Report as `qa/README.md` says under "Reporting", with `QA-Check: compaction-hook-cloud`.
