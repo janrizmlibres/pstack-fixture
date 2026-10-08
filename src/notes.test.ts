@@ -37,6 +37,16 @@ describe("note store", () => {
 		expect(store.add("two").id).toBe(2);
 	});
 
+	test("clears every note without reusing ids", () => {
+		const store = createNoteStore();
+		store.add("one");
+		store.add("two");
+		store.clear();
+		expect(store.list()).toEqual([]);
+		expect(store.add("three")).toEqual({ id: 3, text: "three" });
+		expect(store.list()).toEqual([{ id: 3, text: "three" }]);
+	});
+
 	test("hands out copies, so callers cannot edit stored notes", () => {
 		const store = createNoteStore();
 		store.add("original");

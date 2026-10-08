@@ -96,6 +96,25 @@ describe("notes", () => {
 		expect(store.list()).toEqual([]);
 	});
 
+	test("deletes every note with an empty 204", async () => {
+		store.add("one");
+		store.add("two");
+		const response = await call("DELETE", "/notes");
+		expect(response.status).toBe(204);
+		expect(await response.text()).toBe("");
+		expect(store.list()).toEqual([]);
+	});
+
+	test.each([null, "Bearer nope"])(
+		"refuses to delete every note with auth %p",
+		async (auth) => {
+			store.add("kept");
+			const response = await call("DELETE", "/notes", { auth });
+			expect(response.status).toBe(401);
+			expect(store.list()).toEqual([{ id: 1, text: "kept" }]);
+		},
+	);
+
 	test("answers 404 for a note that does not exist", async () => {
 		expect((await call("DELETE", "/notes/99")).status).toBe(404);
 	});

@@ -7,6 +7,7 @@ export type NoteStore = {
 	list(): Note[];
 	add(text: string): Note;
 	remove(id: number): boolean;
+	clear(): void;
 };
 
 export function createNoteStore(): NoteStore {
@@ -22,5 +23,6 @@ export function createNoteStore(): NoteStore {
 			return { ...note };
 		},
 		remove: (id) => notes.delete(id),
+		clear: () => notes.clear(),
 	};
 }

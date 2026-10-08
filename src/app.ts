@@ -26,6 +26,10 @@ export function createApp({ token, store }: AppOptions) {
 				}
 				return Response.json(store.add(text), { status: 201 });
 			}
+			if (request.method === "DELETE") {
+				store.clear();
+				return new Response(null, { status: 204 });
+			}
 			return error(405, "method not allowed");
 		}
 
