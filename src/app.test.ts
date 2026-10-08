@@ -105,6 +105,41 @@ describe("notes", () => {
 	});
 });
 
+describe("count", () => {
+	test("counts an empty store", async () => {
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 0 });
+	});
+
+	test("counts added notes", async () => {
+		store.add("one");
+		store.add("two");
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 2 });
+	});
+
+	test("counts after a removal", async () => {
+		store.add("one");
+		store.add("two");
+		store.remove(1);
+		const response = await call("GET", "/notes/count");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual({ count: 1 });
+	});
+
+	test("refuses a request without a token", async () => {
+		expect((await call("GET", "/notes/count", { auth: null })).status).toBe(
+			401,
+		);
+	});
+
+	test.each(["POST", "DELETE"])("answers 405 for %s", async (method) => {
+		expect((await call(method, "/notes/count")).status).toBe(405);
+	});
+});
+
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
 });

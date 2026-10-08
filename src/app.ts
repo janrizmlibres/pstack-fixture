@@ -29,6 +29,12 @@ export function createApp({ token, store }: AppOptions) {
 			return error(405, "method not allowed");
 		}
 
+		if (pathname === "/notes/count") {
+			if (request.method === "GET")
+				return Response.json({ count: store.list().length });
+			return error(405, "method not allowed");
+		}
+
 		const id = pathname.match(/^\/notes\/(\d+)$/)?.[1];
 		if (
 			id !== undefined &&
