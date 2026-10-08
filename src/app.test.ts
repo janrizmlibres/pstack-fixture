@@ -37,6 +37,20 @@ describe("health", () => {
 	});
 });
 
+describe("ping", () => {
+	test("answers pong without a token", async () => {
+		const response = await call("GET", "/ping", { auth: null });
+		expect(response.status).toBe(200);
+		expect(await response.text()).toBe("pong");
+	});
+
+	test("ignores a wrong token", async () => {
+		const response = await call("GET", "/ping", { auth: "Bearer nope" });
+		expect(response.status).toBe(200);
+		expect(await response.text()).toBe("pong");
+	});
+});
+
 describe("auth", () => {
 	test("refuses a request without a token", async () => {
 		expect((await call("GET", "/notes", { auth: null })).status).toBe(401);
@@ -107,6 +121,10 @@ describe("notes", () => {
 
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
+});
+
+test("answers 404 for an unknown route without a token", async () => {
+	expect((await call("GET", "/nowhere", { auth: null })).status).toBe(404);
 });
 
 test("answers 405 for a known path with the wrong method", async () => {
