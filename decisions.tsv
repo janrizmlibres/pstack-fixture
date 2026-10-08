@@ -1,0 +1,7 @@
+ts	phase	decision	why	evidence	result
+2026-10-08T11:32:17Z	frame	ran it as an orchestrate program with a store even though one agent could do it	the run prompt asked for the Orchestrate playbook as a small program, which outranks the collapse rule	preferences.md	store qa-orch-compact initialized
+2026-10-08T11:32:17Z	frame	three units, one track (tests), local worktree workers, no landing grant	run prompt said local only, push only the store, land nothing	units.tsv	3 units pending
+2026-10-08T11:32:17Z	brief	named one concrete edge case per module, each with a deliberate defect the new test must catch	a vague brief fails quietly, and a test that passes on existing code needs a fault check to prove it can fail	briefs/config.md, briefs/app.md, briefs/notes.md	briefs written
+2026-10-08T11:32:17Z	brief	workers create .env with cp .env.example .env inside their worktree	repo CLAUDE.md and CI document that step; it creates the file from a committed example rather than copying from another checkout	briefs/_common.md	open
+2026-10-08T11:32:17Z	brief	report commit carries only the Pstack-Status trailer, no Claude-Session	the user's global rule forbids attribution lines in commits and a same-session subagent has no session URL	preferences.md line 8	open
+2026-10-08T11:32:17Z	pilot	config goes first alone as the pilot, app and notes fan out after it reports	clone units, but the first one tests the worktree reset, .env setup and fault-check recipe before paying for two more	briefs/config.md	open

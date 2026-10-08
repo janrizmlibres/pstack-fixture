@@ -1,0 +1,4 @@
+id	track	state	branch	pr	sha	brief
+config	tests	running	orch/qa-orch-compact/config			briefs/config.md
+app	tests	pending				briefs/app.md
+notes	tests	pending				briefs/notes.md
