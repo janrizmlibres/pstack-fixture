@@ -149,11 +149,16 @@ describe("note search", () => {
 		expect(response.status).toBe(401);
 	});
 
-	test.each(["POST", "DELETE"])("answers 405 for %s", async (method) => {
-		const response = await call(method, "/notes/search?q=milk");
-		expect(response.status).toBe(405);
-		expect(await response.json()).toEqual({ error: "method not allowed" });
-	});
+	test.each(["POST", "PUT", "DELETE"])(
+		"answers 405 for %s and leaves the notes alone",
+		async (method) => {
+			store.add("milk");
+			const response = await call(method, "/notes/search?q=milk");
+			expect(response.status).toBe(405);
+			expect(await response.json()).toEqual({ error: "method not allowed" });
+			expect(store.list()).toEqual([{ id: 1, text: "milk" }]);
+		},
+	);
 });
 
 test("answers 404 for an unknown route", async () => {
