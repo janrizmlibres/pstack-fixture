@@ -9,7 +9,7 @@ pstack's release and watch checks run in this repo, so they never touch a real o
 
 1. A local clone of this repo with `bun install` and `cp .env.example .env`.
 2. Locally, the release candidate installed: `claude plugin marketplace add janrizmlibres/claude-pstack#<candidate branch>`, then `claude plugin install pstack@claude-pstack`.
-3. A cloud environment named `pstack-qa` whose setup script is the setup line with the candidate's ref, and its id in this clone's `.claude/settings.local.json` (git-ignored):
+3. A cloud environment named `pstack-qa` whose setup script is the setup line with the candidate's ref and whose environment variables include `NOTES_API_TOKEN=change-me` (a cloud VM has no `.env`, and agents never make one), and its id in this clone's `.claude/settings.local.json` (git-ignored):
 
    ```json
    { "remote": { "defaultEnvironmentId": "env_…" } }
@@ -20,7 +20,7 @@ pstack's release and watch checks run in this repo, so they never touch a real o
 From the clone, unattended in Auto:
 
 ```bash
-script -q /dev/null claude --cloud --permission-mode auto "$(cat qa/briefs/<check>.md)"
+script -q /dev/null claude --permission-mode auto --cloud "$(cat qa/briefs/<check>.md)"
 ```
 
 A few checks need something set up first, or a different start:
