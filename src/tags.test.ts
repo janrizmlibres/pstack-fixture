@@ -1,5 +1,5 @@
 import { describe, expect, test } from "bun:test";
-import { parseTags } from "./tags";
+import { parseTag, parseTags } from "./tags";
 
 describe("parseTags", () => {
 	test("reads no tags as an empty list", () => {
@@ -29,5 +29,19 @@ describe("parseTags", () => {
 		["null", null],
 	])("refuses %s", (_, raw) => {
 		expect(parseTags(raw)).toBeUndefined();
+	});
+});
+
+describe("parseTag", () => {
+	test("lower-cases the tag", () => {
+		expect<string | undefined>(parseTag("Work")).toBe("work");
+	});
+
+	test.each([
+		["an empty string", ""],
+		["a space", "a b"],
+		["a 33-character value", "a".repeat(33)],
+	])("refuses %s", (_, raw) => {
+		expect(parseTag(raw)).toBeUndefined();
 	});
 });

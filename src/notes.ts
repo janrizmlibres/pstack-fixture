@@ -7,7 +7,7 @@ export type Note = {
 };
 
 export type NoteStore = {
-	list(): Note[];
+	list(tag?: Tag): Note[];
 	add(text: string, tags?: Tag[]): Note;
 	remove(id: number): boolean;
 };
@@ -18,7 +18,10 @@ export function createNoteStore(): NoteStore {
 	const copy = (note: Note): Note => ({ ...note, tags: [...note.tags] });
 
 	return {
-		list: () => [...notes.values()].map(copy),
+		list: (tag) =>
+			[...notes.values()]
+				.filter((note) => tag === undefined || note.tags.includes(tag))
+				.map(copy),
 		add(text, tags = []) {
 			lastId += 1;
 			const note = { id: lastId, text: text.trim(), tags: [...new Set(tags)] };

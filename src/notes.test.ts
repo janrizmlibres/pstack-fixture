@@ -3,6 +3,7 @@ import { createNoteStore } from "./notes";
 import type { Tag } from "./tags";
 
 const tags = (...names: string[]) => names as Tag[];
+const tag = (name: string) => name as Tag;
 
 describe("note store", () => {
 	test("starts empty", () => {
@@ -72,5 +73,38 @@ describe("note store", () => {
 		store.add("tagged", tags("work")).tags.push("added" as Tag);
 		store.list()[0]?.tags.push("added" as Tag);
 		expect(store.list()[0]?.tags).toEqual(tags("work"));
+	});
+
+	describe("filtered by tag", () => {
+		function seeded() {
+			const store = createNoteStore();
+			store.add("one", tags("work"));
+			store.add("two", tags("home"));
+			store.add("three", tags("work", "q3"));
+			return store;
+		}
+
+		test("lists only the notes that carry the tag, in id order", () => {
+			expect(seeded().list(tag("work"))).toEqual([
+				{ id: 1, text: "one", tags: tags("work") },
+				{ id: 3, text: "three", tags: tags("work", "q3") },
+			]);
+		});
+
+		test("lists nothing for a tag no note carries", () => {
+			const store = seeded();
+			expect(store.list(tag("nobody"))).toEqual([]);
+			expect(store.list(tag("home"))).toEqual([
+				{ id: 2, text: "two", tags: tags("home") },
+			]);
+		});
+
+		test("lists every note without a tag", () => {
+			expect(
+				seeded()
+					.list()
+					.map((note) => note.id),
+			).toEqual([1, 2, 3]);
+		});
 	});
 });

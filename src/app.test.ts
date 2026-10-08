@@ -165,6 +165,59 @@ describe("notes", () => {
 	});
 });
 
+describe("notes filtered by tag", () => {
+	beforeEach(async () => {
+		await call("POST", "/notes", { body: { text: "one", tags: ["work"] } });
+		await call("POST", "/notes", { body: { text: "two", tags: ["home"] } });
+		await call("POST", "/notes", {
+			body: { text: "three", tags: ["work", "q3"] },
+		});
+	});
+
+	test.each(["work", "WORK", "Work"])(
+		"lists only the notes tagged %p",
+		async (tag) => {
+			const response = await call("GET", `/notes?tag=${tag}`);
+			expect(response.status).toBe(200);
+			expect(await response.json()).toEqual([
+				{ id: 1, text: "one", tags: ["work"] },
+				{ id: 3, text: "three", tags: ["work", "q3"] },
+			]);
+		},
+	);
+
+	test("lists nothing for a tag no note carries", async () => {
+		const response = await call("GET", "/notes?tag=nobody");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([]);
+	});
+
+	test("lists every note without a tag filter", async () => {
+		const response = await call("GET", "/notes");
+		expect(response.status).toBe(200);
+		expect(await response.json()).toEqual([
+			{ id: 1, text: "one", tags: ["work"] },
+			{ id: 2, text: "two", tags: ["home"] },
+			{ id: 3, text: "three", tags: ["work", "q3"] },
+		]);
+	});
+
+	test.each([
+		"tag=",
+		"tag",
+		"tag=a%20b",
+		"tag=caf%C3%A9",
+		`tag=${"a".repeat(33)}`,
+		"tag=work&tag=home",
+	])("refuses the filter ?%s", async (query) => {
+		const response = await call("GET", `/notes?${query}`);
+		expect(response.status).toBe(400);
+		expect(await response.json()).toEqual({
+			error: "tag must be a 1-32 character word",
+		});
+	});
+});
+
 test("answers 404 for an unknown route", async () => {
 	expect((await call("GET", "/nowhere")).status).toBe(404);
 });

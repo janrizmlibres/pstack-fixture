@@ -1,5 +1,5 @@
 import type { NoteStore } from "./notes";
-import { parseTags } from "./tags";
+import { parseTag, parseTags } from "./tags";
 
 type AppOptions = {
 	token: string;
@@ -8,7 +8,7 @@ type AppOptions = {
 
 export function createApp({ token, store }: AppOptions) {
 	return async (request: Request): Promise<Response> => {
-		const { pathname } = new URL(request.url);
+		const { pathname, searchParams } = new URL(request.url);
 
 		if (pathname === "/health") return new Response("ok");
 		if (pathname !== "/notes" && !pathname.startsWith("/notes/"))
@@ -19,7 +19,15 @@ export function createApp({ token, store }: AppOptions) {
 		}
 
 		if (pathname === "/notes") {
-			if (request.method === "GET") return Response.json(store.list());
+			if (request.method === "GET") {
+				const [raw, ...repeats] = searchParams.getAll("tag");
+				if (raw === undefined) return Response.json(store.list());
+				const tag = repeats.length === 0 ? parseTag(raw) : undefined;
+				if (tag === undefined) {
+					return error(400, "tag must be a 1-32 character word");
+				}
+				return Response.json(store.list(tag));
+			}
 			if (request.method === "POST") {
 				const body = await readBody(request);
 				const text = readText(body);
