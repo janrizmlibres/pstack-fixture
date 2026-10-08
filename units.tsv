@@ -1,4 +1,4 @@
 id	track	state	branch	pr	sha	brief
 config	tests	done	orch/qa-orch-compact/config		60658b7	briefs/config.md
-app	tests	running	orch/qa-orch-compact/app			briefs/app.md
-notes	tests	running	orch/qa-orch-compact/notes			briefs/notes.md
+app	tests	done	orch/qa-orch-compact/app		6e0adbb	briefs/app.md
+notes	tests	done	orch/qa-orch-compact/notes		1293403	briefs/notes.md
